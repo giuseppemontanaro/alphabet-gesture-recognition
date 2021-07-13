@@ -11,8 +11,10 @@ def get_landmark_x_y_row(num_landmark, landmark_list):
         row[i] = landmark_list[index][5]
     return row
 
+
 def calculate_distance(x1, y1, x2, y2):
 	return math.dist([x1, y1], [x2, y2])
+
 
 def get_landmark_distance_row(num_landmark, landmark_list):
     row = {}
