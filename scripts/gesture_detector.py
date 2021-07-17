@@ -13,7 +13,8 @@ from landmark_operator import get_landmark_distance_row
 MODEL = pickle.load(open('../models/model.sav', 'rb'))
 ALPHABET = json.load(open('../json/alphabet_mapping.json', 'rb'))
 NUM_LANDMARK = 21
-NUM_PREDICTION_FRAME = 10
+NUM_PREDICTION_FRAME = 15
+FONT = cv2.FONT_HERSHEY_SIMPLEX
 
 
 def main():
@@ -31,14 +32,13 @@ def detect(detector, cap):
 	while True:
 		success, img = cap.read()
 		img = detector.draw_hands_on_image(img)
-		cv2.imshow("Img", img)
-		cv2.waitKey(1)
 		landmark_list = detector.find_position(img, htm.RIGHT_HAND)
 		if len(landmark_list) != 0:
 			data = get_landmark_distance_row(NUM_LANDMARK, landmark_list)
 			model_input = pd.DataFrame(data, index=[0])
 			probabilities = MODEL.predict_proba(model_input)[0]
 			pred_prob = max(probabilities)
+			
 			if pred_prob > 0.6:
 				prediction = MODEL.predict(model_input)[0]
 				buffer_letter.append(prediction)
@@ -49,14 +49,17 @@ def detect(detector, cap):
 				value = list(dict_counter.values())[0]
 				key = list(dict_counter.keys())[0]
 				if(value > NUM_PREDICTION_FRAME*0.7):
-					if key == 16:
-						#word_to_say = word_to_say + ' '
-						system(f'say {word_to_say}')
-						word_to_say = ''
+					if key == 24:
+						if word_to_say != '':
+							system(f'say {word_to_say}')
+							word_to_say = ''
 					else:
 						word_to_say = word_to_say + ALPHABET[str(key)] 
 					print(word_to_say)
 				buffer_letter=[]
+		cv2.putText(img, word_to_say,(100,50), FONT, 1.8,(0,0,255),2)
+		cv2.imshow("Img", img)
+		cv2.waitKey(1)
 
 
 def predict():
