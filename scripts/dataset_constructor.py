@@ -47,7 +47,7 @@ while True:
         	landmark_list = landmark_list_left
         if(len(landmark_list) > 0):
             df = df.append(get_landmark_distance_row(num_landmark, landmark_list), ignore_index=True)
-            print(df.shape[0])
+            print('Saving entry: ' + str(df.shape[0]))
 
     df['y'] = label
     Path('../dataset').mkdir(parents=True, exist_ok=True)

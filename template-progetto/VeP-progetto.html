@@ -153,7 +153,7 @@
                             </ul>
                             <p>After the creation of the object, we can call the method <b>draw_hands_on_image</b> to draw the landmark of the hands linked by green lines, passing the image as an argument. The method will return the img with landmarks drawn.</p>
 
-                            <img class="landscape-image" src="VeP-progetto_files/img/mediapipe_hands.png" alt="Media Pipe Hands">
+                            <img class="landscape-media" src="VeP-progetto_files/img/mediapipe_hands.png" alt="Media Pipe Hands">
 
                             <p>The second main method we buildt is <b>find_position</b> which takes in input the img and the hand to detect: to choose the hand to detect we can use two constants defined in the wrapper:</p>
                             <ul>
@@ -166,7 +166,7 @@
                                 <li><b>3 coordinates:</b> x,y,z of the specific landmark depending on the img size</li>
                                 <li><b>3 normalized coordinates:</b> x,y,z of the specific landmark between 0 and 1</li>
                             </ul>                            
-                            <img class="landscape-image" src="VeP-progetto_files/img/mediapipe_landmarks.png" alt="Media Pipe Hands">
+                            <img class="landscape-media" src="VeP-progetto_files/img/mediapipe_landmarks.png" alt="Media Pipe Hands">
 
                             <h4>Dataset Construction</h4>
                             <p>The first task to do was to create the dataset with the alphabet gestures. We referenced the following video: </p>
@@ -177,9 +177,12 @@
                                 <li><b>DETECTION_CONFIDENCE</b> The higher is detection confidence the more accurate will be the examples. The max is always 1 but is not recommended because the precision of 100% is never reached by MediaPipe. We used 0.80 as detection confidence.</li>
                                 <li><b>TRACK_CONFIDENCE</b> A similar speech can be made for the track confidence. in this case we use 0.85 as track confidence.</li>
                             </ul> 
-                            After setting the parameters, running the script the system will require an id for the label. We use the number from 0 to 24 to identify the labels. Then the script open the webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand and get the landmark list. The strategy adopted is to use as a feature for every example the distance between the most relevant landmarks. To calculate this distance we write the <b>landmark_operator</b> module wich calculate the distance using the <b>Math</b> python module. Using the <b>Pandas</b> library it saves this values in a Pandas dataframe and later in a file csv. We create a csv for every label and after we create the file <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to the associated character [a, b, .... ' ']. More information about the content of the entries in the csv files could be found in the <a href="#dataset-section">Dataset</a> section.
+                            After setting the parameters, running the script the system will require an id for the label. We use the number from 0 to 24 to identify the labels. Then the script open the webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand and get the landmark list. The strategy adopted is to use as a feature for every example the distance between the most relevant landmarks. To calculate this distance we write the <b>landmark_operator</b> module wich calculate the distance using the <b>Math</b> python module. Using the <b>Pandas</b> library it saves this values in a Pandas dataframe and later in a file csv. We create a csv for every label and after we create the file <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to the associated character [a, b, .... ' ']. More information about the content of the entries in the csv files could be found in the <a href="#dataset-section">Dataset</a> section. In the following video is shown an example of dataset construction with 100 entries for the letter 'a'.
                         </div>
-                        <b>VIDEO</b>
+                        <video class="landscape-media-full" controls>
+                            <source src="VeP-progetto_files/video/Dataset-Construction-Example.mov" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                         <!--//content-->
                     </div>
                     <!--//section-inner-->
@@ -218,7 +221,7 @@
                             <p>The csv for each letter can be found at the following link: </p>
                             <a href="">Link</a>
                             <p>An example of how the csv looks like  is shown in the following image representing the first 20 entries of the 'a' dataset.</p>
-                            <img class="landscape-image-full" src="VeP-progetto_files/img/Dataset-example.png" alt="Dataset Example">
+                            <img class="landscape-media-full" src="VeP-progetto_files/img/Dataset-example.png" alt="Dataset Example">
                             <p>Every csv is divided in 32 column for the <b>features</b> and 1 column for the <b>label</b> using the following conventions:</p>
                             <ul>
                                 <li>The column from <b>0</b> to <b>19</b> represents the distance between the landmark 0 associated to the palm of the hand and the others 20 landmarks.</li>
