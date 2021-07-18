@@ -198,7 +198,8 @@
                                 draw the landmark of the hands linked by green lines, passing the image as an argument.
                                 The method will return the img with landmarks drawn.</p>
 
-                            <img class="landscape-media" src="VeP-progetto_files/img/mediapipe_hands.png" alt="Media Pipe Hands">
+                            <img class="landscape-media" src="VeP-progetto_files/img/mediapipe_hands.png"
+                                alt="Media Pipe Hands">
 
                             <p>The second main method we buildt is <b>find_position</b> which takes in input the img and
                                 the hand to detect: to choose the hand to detect we can use two constants defined in the
@@ -213,8 +214,9 @@
                                 <li><b>id</b> described using the image below</li>
                                 <li><b>3 coordinates:</b> x,y,z of the specific landmark depending on the img size</li>
                                 <li><b>3 normalized coordinates:</b> x,y,z of the specific landmark between 0 and 1</li>
-                            </ul>                            
-                            <img class="landscape-media" src="VeP-progetto_files/img/mediapipe_landmarks.png" alt="Media Pipe Hands">
+                            </ul>
+                            <img class="landscape-media" src="VeP-progetto_files/img/mediapipe_landmarks.png"
+                                alt="Media Pipe Hands">
 
                             <h4>Dataset Construction</h4>
                             <p>The first task to do was to create the dataset with the alphabet gestures. We referenced
@@ -226,22 +228,67 @@
                                 space. We build the script <b>dataset_constructor.py</b> which can be used to build the
                                 example for every label. In this script there are some parameters that can be set:</p>
                             <ul>
-                                <li><b>num_labels</b> To choose the number of the example to build for the label. We used 500 examples for every label.</li>
-                                <li><b>DETECTION_CONFIDENCE</b> The higher is detection confidence the more accurate will be the examples. The max is always 1 but is not recommended because the precision of 100% is never reached by MediaPipe. We used 0.80 as detection confidence.</li>
-                                <li><b>TRACK_CONFIDENCE</b> A similar speech can be made for the track confidence. in this case we use 0.85 as track confidence.</li>
-                            </ul> 
-                            After setting the parameters, running the script the system will require an id for the label. We use the number from 0 to 24 to identify the labels. Then the script open the webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand and get the landmark list. The strategy adopted is to use as a feature for every example the distance between the most relevant landmarks. To calculate this distance we write the <b>landmark_operator</b> module wich calculate the distance using the <b>Math</b> python module. Using the <b>Pandas</b> library it saves this values in a Pandas dataframe and later in a file csv. We create a csv for every label and after we create the file <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to the associated character [a, b, .... ' ']. More information about the content of the entries in the csv files could be found in the <a href="#dataset-section">Dataset</a> section. In the following video is shown an example of dataset construction with 100 entries for the letter 'a'.
+                                <li><b>num_labels</b> To choose the number of the example to build for the label. We
+                                    used 500 examples for every label.</li>
+                                <li><b>DETECTION_CONFIDENCE</b> The higher is detection confidence the more accurate
+                                    will be the examples. The max is always 1 but is not recommended because the
+                                    precision of 100% is never reached by MediaPipe. We used 0.80 as detection
+                                    confidence.</li>
+                                <li><b>TRACK_CONFIDENCE</b> A similar speech can be made for the track confidence. in
+                                    this case we use 0.85 as track confidence.</li>
+                            </ul>
+                            After setting the parameters, running the script the system will require an id for the
+                            label. We use the number from 0 to 24 to identify the labels. Then the script open the
+                            webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand
+                            and get the landmark list. The strategy adopted is to use as a feature for every example the
+                            distance between the most relevant landmarks. To calculate this distance we write the
+                            <b>landmark_operator</b> module wich calculate the distance using the <b>Math</b> python
+                            module. Using the <b>Pandas</b> library it saves this values in a Pandas dataframe and later
+                            in a file csv. We create a csv for every label and after we create the file
+                            <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to
+                            the associated character [a, b, .... ' ']. More information about the content of the entries
+                            in the csv files could be found in the <a href="#dataset-section">Dataset</a> section. In
+                            the following video is shown an example of dataset construction with 100 entries for the
+                            letter 'a'.
                         </div>
                         <video class="landscape-media-full" controls>
                             <source src="VeP-progetto_files/video/Dataset-Construction-Example.mov" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <!--//content-->
-                    </div>
-                    <!--//section-inner-->
-                </section>
-                <!--//section-->
 
+                        <h4>Model</h4>
+                        <p>
+                            The model is based on a Logistic Regression between the 32 features. Firstly, we have
+                            mounted the drive with the whole dataset and then imported the data, then we randomly split
+                            the data in training set and test set respectively 80% and 20% of the whole dataset.
+                            After that we have used a grid search in order to tune the algorithm with different values
+                            of iteration, regularization factor and solvers.
+                            During the cross validation is used the repeated stratified k-fold algorithm
+                            which in this case divide the data in 10 folds and is repeated for 3 times.
+                            The notebook displays the paramethers' values which got the best scores
+                            during the training and the cross validation. In this way, if
+                            the colab runtime is disconnected due to inactivity, we can retrain the model in just few
+                            seconds instead of waiting several minutes for the tuning to be done.
+                            In the end that there is a section dedicated to the valutation of the model's performance on
+                            the test set. The test result includes a confusion matrix and a classification report with
+                            precision, recall and f-measure for each class and it can be read in the colab preview
+                            below.
+                            Finally, there is a cell that serialize the model in <i>.sav</i> file so that it can be used
+                            in an application.
+                        </p>
+                        <script
+                            src="https://gist.github.com/giuseppemontanaro/066e2187ca21220dabfb80e786bf8e01.js"></script>
+                        <p>
+                            For the notebook used for training the model: <a
+                                href="https://colab.research.google.com/drive/12k0LRJM2ubkQOYWJl8sd_wBuM2XxYE2-#scrollTo=xP4QgChYxtyQ">
+                                Google Colab
+                            </a>
+                            <br>
+                            For whole project: <a
+                                href="https://github.com/giuseppemontanaro/alphabet-gesture-recognition">GitHub</a>
+                        </p>
+                    </div>
+                </section>
 
                 <section class="about section" id="dataset-section">
                     <div class="section-inner">
@@ -249,22 +296,40 @@
                         <div class="content">
                             <p>The csv for each letter can be found at the following link: </p>
                             <a href="">Link</a>
-                            <p>An example of how the csv looks like  is shown in the following image representing the first 20 entries of the 'a' dataset.</p>
-                            <img class="landscape-media-full" src="VeP-progetto_files/img/Dataset-example.png" alt="Dataset Example">
-                            <p>Every csv is divided in 32 column for the <b>features</b> and 1 column for the <b>label</b> using the following conventions:</p>
+                            <p>An example of how the csv looks like is shown in the following image representing the
+                                first 20
+                                entries of the 'a' dataset.</p>
+                            <img class="landscape-media-full" src="VeP-progetto_files/img/Dataset-example.png"
+                                alt="Dataset Example">
+                            <p>Every csv is divided in 32 column for the <b>features</b> and 1 column for the
+                                <b>label</b> using
+                                the following conventions:
+                            </p>
                             <ul>
-                                <li>The column from <b>0</b> to <b>19</b> represents the distance between the landmark 0 associated to the palm of the hand and the others 20 landmarks.</li>
-                                <li>The column from <b>20</b> to <b>23</b> represents the distance between the landmarks 2, 6, 10, 14, 18 associated to the <b>first</b> level of the phalanges.</li>
-                                <li>The column from <b>24</b> to <b>27</b> represents the distance between the landmarks 3, 7, 11, 15, 19 associated to the <b>second</b> level of the phalanges.</li>
-                                <li>The column from <b>28</b> to <b>31</b> represents the distance between the landmarks 4, 8, 12, 16, 20 associated to the <b>third</b> level of the phalanges.</li>   
-                                <li>The column n. <b>32</b>(y) represents the label associated to the <b>letter considered</b>.</li>  
+                                <li>The column from <b>0</b> to <b>19</b> represents the distance between the landmark 0
+                                    associated to the palm of the hand and the others 20 landmarks.</li>
+                                <li>The column from <b>20</b> to <b>23</b> represents the distance between the landmarks
+                                    2, 6,
+                                    10, 14, 18 associated to the <b>first</b> level of the phalanges.</li>
+                                <li>The column from <b>24</b> to <b>27</b> represents the distance between the landmarks
+                                    3, 7,
+                                    11, 15, 19 associated to the <b>second</b> level of the phalanges.</li>
+                                <li>The column from <b>28</b> to <b>31</b> represents the distance between the landmarks
+                                    4, 8,
+                                    12, 16, 20 associated to the <b>third</b> level of the phalanges.</li>
+                                <li>The column n. <b>32</b>(y) represents the label associated to the <b>letter
+                                        considered</b>.
+                                </li>
                             </ul>
                             <div class="flex-row">
-                                <img class="flex-element" src="VeP-progetto_files/img/landmarks-1.png" alt="landmarks-1">
-                                <img class="flex-element" src="VeP-progetto_files/img/landmarks-2.png" alt="landmarks-2">
-                                <img class="flex-element" src="VeP-progetto_files/img/landmarks-3.png" alt="landmarks-3">
+                                <img class="flex-element" src="VeP-progetto_files/img/landmarks-1.png"
+                                    alt="landmarks-1">
+                                <img class="flex-element" src="VeP-progetto_files/img/landmarks-2.png"
+                                    alt="landmarks-2">
+                                <img class="flex-element" src="VeP-progetto_files/img/landmarks-3.png"
+                                    alt="landmarks-3">
                             </div>
-    
+
                         </div>
                         <!--//content-->
                     </div>
@@ -272,116 +337,114 @@
                 </section>
                 <!--//section-->
 
+                <section class="about section" id="results">
+                    <div class="section-inner">
+                        <h2 class="heading"><a id="training"></a>Results</h2>
+                        <div class="content">
 
-        <section class="about section" id="results">
-            <div class="section-inner">
-                <h2 class="heading"><a id="training"></a>Results</h2>
-                <div class="content">
-
-
-                    <h3>Risultati qualitativi</h3>
-                    <p>Fornire esempi di applicazione del metodo con immagini e video</p>
+                            <h3>Risultati qualitativi</h3>
+                            <p>Fornire esempi di applicazione del metodo con immagini e video</p>
 
 
-                    <h3>Risultati quantitativi</h3>
-                    <p>Fornire una descrizione delle performance del metodo usando
-                        delle opportune metriche</p>
+                            <h3>Risultati quantitativi</h3>
+                            <p>Fornire una descrizione delle performance del metodo usando
+                                delle opportune metriche</p>
 
-                    <p>Per esempio:<br>
-                        Fornire su un numero di immagini non inferiore a 30 i dati relativi
-                        a FP, FN, TP.
-                    </p>
+                            <p>Per esempio:<br>
+                                Fornire su un numero di immagini non inferiore a 30 i dati relativi
+                                a FP, FN, TP.
+                            </p>
 
 
 
-                </div>
-                <!--//content-->
+                        </div>
+                        <!--//content-->
+                    </div>
+                    <!--//section-inner-->
+                </section>
+                <!--//section-->
+
             </div>
-            <!--//section-inner-->
-        </section>
-        <!--//section-->
+            <!--//primary-->
 
-    </div>
-    <!--//primary-->
+            <div class="secondary col-md-4 col-sm-12 col-xs-12">
+                <aside class="info aside section">
+                    <div class="section-inner">
+                        <h2 class="heading">Authors</h2>
+                        <div class="content">
+                            <p>Giuseppe Montanaro, 62719</p>
+                            <p>Simone Smaldore, 62728</p>
+                        </div>
+                        <!--//content-->
+                    </div>
+                    <!--//section-inner-->
+                </aside>
+                <!--//aside-->
 
-    <div class="secondary col-md-4 col-sm-12 col-xs-12">
-        <aside class="info aside section">
-            <div class="section-inner">
-                <h2 class="heading">Authors</h2>
-                <div class="content">
-                    <p>Giuseppe Montanaro, 62719</p>
-                    <p>Simone Smaldore, 62728</p>
-                </div>
-                <!--//content-->
+                <aside class="blog aside section">
+                    <div class="section-inner">
+                        <h2 class="heading">Table of Contents</h2>
+                        <div class="content">
+
+                            <div class="item">
+                                <a href="#problem">Problem</a>
+                            </div>
+                            <div class="item">
+                                <a href="#motivation">Motivations & Goals</a>
+                            </div>
+                            <div class="item">
+                                <a href="#method">Method</a>
+                            </div>
+                            <div class="item">
+                                <a href="#implementation">Implementation & Code</a>
+                            </div>
+                            <div class="item">
+                                <a href="#dataset">Dataset</a>
+                            </div>
+                            <div class="item">
+                                <a href="#results">Results</a>
+                            </div>
+
+                        </div>
+                        <!--//content-->
+                    </div>
+                    <!--//section-inner-->
+                </aside>
+                <!--//section-->
+
+                <aside class="blog aside section">
+                    <div class="section-inner">
+                        <h2 class="heading">Useful Links</h2>
+                        <div class="content">
+
+                            <div class="item">
+                                <a href="https://web.unibas.it/bloisi/" target="_blank">Domenico Bloisi's home page</a>
+                            </div>
+                            <div class="item">
+                                <a href="https://opencv.org/" target="_blank">OpenCV</a>
+                            </div>
+                            <div class="item">
+                                <a href="https://mediapipe.dev/" target="_blank">MediaPipe</a>
+                            </div>
+                            <div class="item">
+                                <a href="https://scikit-learn.org/stable/" target="_blank">scikit-learn</a>
+                            </div>
+                            <div class="item">
+                                <a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank">Google
+                                    Colaboratory</a>
+                            </div>
+
+                        </div>
+                        <!--//content-->
+                    </div>
+                    <!--//section-inner-->
+                </aside>
+                <!--//section-->
+
             </div>
-            <!--//section-inner-->
-        </aside>
-        <!--//aside-->
-
-        <aside class="blog aside section">
-            <div class="section-inner">
-                <h2 class="heading">Table of Contents</h2>
-                <div class="content">
-
-                    <div class="item">
-                        <a href="#problem">Problem</a>
-                    </div>
-                    <div class="item">
-                        <a href="#motivation">Motivations & Goals</a>
-                    </div>
-                    <div class="item">
-                        <a href="#method">Method</a>
-                    </div>
-                    <div class="item">
-                        <a href="#implementation">Implementation & Code</a>
-                    </div>
-                    <div class="item">
-                        <a href="#dataset">Dataset</a>
-                    </div>
-                    <div class="item">
-                        <a href="#results">Results</a>
-                    </div>
-
-                </div>
-                <!--//content-->
-            </div>
-            <!--//section-inner-->
-        </aside>
-        <!--//section-->
-
-        <aside class="blog aside section">
-            <div class="section-inner">
-                <h2 class="heading">Useful Links</h2>
-                <div class="content">
-
-                    <div class="item">
-                        <a href="https://web.unibas.it/bloisi/" target="_blank">Domenico Bloisi's home page</a>
-                    </div>
-                    <div class="item">
-                        <a href="https://opencv.org/" target="_blank">OpenCV</a>
-                    </div>
-                    <div class="item">
-                        <a href="https://mediapipe.dev/" target="_blank">MediaPipe</a>
-                    </div>
-                    <div class="item">
-                        <a href="https://scikit-learn.org/stable/" target="_blank">scikit-learn</a>
-                    </div>
-                    <div class="item">
-                        <a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank">Google
-                            Colaboratory</a>
-                    </div>
-
-                </div>
-                <!--//content-->
-            </div>
-            <!--//section-inner-->
-        </aside>
-        <!--//section-->
-
-    </div>
-    <!--//secondary-->
-    </div>
-    <!--//row-->
+            <!--//secondary-->
+        </div>
+        <!--//row-->
     </div>
     <!--//masonry-->
 
