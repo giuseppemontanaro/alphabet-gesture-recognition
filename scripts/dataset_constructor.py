@@ -2,6 +2,7 @@ import pandas as pd
 import cv2 as cv
 import HandTrackingModule as htm
 import time
+from pathlib import Path
 
 from threading import Thread
 from landmark_operator import get_landmark_distance_row
@@ -48,7 +49,8 @@ while True:
             df = df.append(get_landmark_distance_row(num_landmark, landmark_list), ignore_index=True)
             print(df.shape[0])
 
-    df[num_landmark * 2] = label
+    df['y'] = label
+    Path('../dataset').mkdir(parents=True, exist_ok=True)
     df.to_csv(f'../dataset/{label}.csv', index=False)
 
 cap.release()
