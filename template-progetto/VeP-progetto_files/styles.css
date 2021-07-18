@@ -535,3 +535,10 @@ iframe {
     width: 1360px;
   }
 }
+
+.landscape-image {
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 5%;
+  margin-bottom: 7%;
+}

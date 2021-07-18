@@ -78,7 +78,7 @@
 
                 <section class="about section" id="motivation">
                     <div class="section-inner">
-                        <h2 class="heading">Motivations & Goals</h2>
+                        <h2 class="heading">Motivations</h2>
                         <div class="content">
                             <p>
                                 We strongly belive that the modern technologies have the opportunity to enhace the every
@@ -86,8 +86,7 @@
                                 live of unfortunate people.
                                 The main purpose of this project is to develop a software module capable of distinguish
                                 between different
-                                hand signs and make possible to assign an action to a specfic seguence of gestures.
-                                In this case, we have realized a mock cafè menù usable only by hand gestures.
+                                hand signs and make possible to realize speech synthesizer application.
                             </p>
                         </div>
                         <!--//content-->
@@ -110,17 +109,18 @@
                 <!-- </section> -->
                 <!--//section-->
 
-                <section class="about section" id="method">
+                <!--//section-->
+
+                 <section class="about section" id="goals">
                     <div class="section-inner">
-                        <h2 class="heading"><a id="dataset"></a>Method</h2>
+                        <h2 class="heading"><a id="dataset"></a>Goals</h2>
                         <div class="content">
-                            <p>Descrivere il procedimento utilizzato per risolvere il problema,
-                                evidenziando quali algoritmi noti sono stati utilizzati</p>
-                            <p>Per esempio:<br>
+                            <p>Main objectives<br>
                             <ul>
-                                <li>Corner detector di Harris</li>
-                                <li>SIFT</li>
-                                <li>CNN</li>
+                                <li>Creation of Mediapipe Wrapper</li>
+                                <li>Dataset Construction</li>
+                                <li>Model Realization</li>
+                                <li>Realization of speech synthesizer application</li>
                             </ul>
                             </p>
 
@@ -129,7 +129,61 @@
                     </div>
                     <!--//section-inner-->
                 </section>
-                <!--//section-->
+
+                <section class="about section" id="method">
+                    <div class="section-inner">
+                        <h2 class="heading"><a id="dataset"></a>Method</h2>
+                        <div class="content">
+                            <h4>Creation Of MediaPipe Wrapper</h4>
+                            <p>The first problem to solve was the detection of the 
+                                hands: we choice <a href="https://google.github.io/mediapipe/">MediaPipe</a> to do that because MediaPipe Hands Module utilizes an ML pipeline consisting of multiple models working together: A palm detection model that operates on the full image and returns an oriented hand bounding box. A hand landmark model that operates on the cropped image region defined by the palm detector and returns high-fidelity 3D hand keypoints. Providing the accurately cropped hand image to the hand landmark model drastically reduces the need for data augmentation and instead allows the network to dedicate most of its capacity towards coordinate prediction accuracy.</p>
+                            <p>The wrapper we built has two main functions:<br>
+                            <ul>
+                                <li>Draw hands on an input image</li>
+                                <li>Detect the landmarks for a determinate hand</li>
+                            </ul>
+                            </p>
+                            <p>The first thing to do is to create an <b>HandTrakingModule</b> object 
+                            passing in input the following arguments:</p>
+                            <ul>
+                                <li><b>mode</b> for the type of detection we want: If we want a Static detection for single image we pass true. Otherwise if we want a Dynamic detection, like our case, for a detection using ordered frames of the same video we pass false.</li>
+                                <li><b>max_hands</b> The max number of hands detected. For better results is it worth to set this parameter max to 2</li>
+                                <li><b>detection_confidence</b> The percent of confidence in the first detection of the hands: Obviously higher is the confidence better detection result we have, but is less likely to find the hands.</li>
+                                <li><b>track_confidence</b> The percent of confidence in the tracking of the hands frame by frame after the first detection.</li>
+                            </ul>
+                            <p>After the creation of the object, we can call the method <b>draw_hands_on_image</b> to draw the landmark of the hands linked by green lines, passing the image as an argument. The method will return the img with landmarks drawn.</p>
+
+                            <img class="landscape-image" src="VeP-progetto_files/img/mediapipe_hands.png" alt="Media Pipe Hands">
+
+                            <p>The second main method we buildt is <b>find_position</b> which takes in input the img and the hand to detect: to choose the hand to detect we can use two constants defined in the wrapper:</p>
+                            <ul>
+                                <li><b>RIGHT_HAND</b></li>
+                                <li><b>LEFT_HAND</b></li>
+                            </ul>
+                            <p>The method returns the landmark-list with 21 elements: every element of the list has 7 elements:</p>
+                            <ul>
+                                <li><b>id</b> described using the image below</li>
+                                <li><b>3 coordinates:</b> x,y,z of the specific landmark depending on the img size</li>
+                                <li><b>3 normalized coordinates:</b> x,y,z of the specific landmark between 0 and 1</li>
+                            </ul>                            
+                            <img class="landscape-image" src="VeP-progetto_files/img/mediapipe_landmarks.png" alt="Media Pipe Hands">
+
+                            <h4>Dataset Construction</h4>
+                            <p>The first task to do was to create the dataset with the alphabet gestures. We referenced the following video: </p>
+                            <a href="https://www.youtube.com/watch?v=0Yx9IkOxFyI" target="_blank">https://www.youtube.com/watch?v=0Yx9IkOxFyI</a>
+                            <p>Since there are two dynamic features for Z and J we used the other letters for the algorithm. So we have 24 possible labels + 1 because we consider an open hand as a space. We build the script <b>dataset_constructor.py</b> which can be used to build the example for every label. In this script there are some parameters that can be set:</p>
+                            <ul>
+                                <li><b>num_labels</b> To choose the number of the example to build for the label. We used 500 examples for every label.</li>
+                                <li><b>DETECTION_CONFIDENCE</b> The higher is detection confidence the more accurate will be the examples. The max is always 1 but is not recommended because the precision of 100% is never reached by MediaPipe. We used 0.80 as detection confidence.</li>
+                                <li><b>TRACK_CONFIDENCE</b> A similar speech can be made for the track confidence. in this case we use 0.85 as track confidence.</li>
+                            </ul> 
+                            After setting the parameters, running the script the system will require an id for the label. We use the number from 0 to 24 to identify the labels. Then the script open the webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand and get the landmark list. The strategy adopted is to use as a feature for every example the distance between the most relevant landmarks. To calculate this distance we write the <b>landmark_operator</b> module wich calculate the distance using the <b>Math</b> python module. Using the <b>Pandas</b> library it saves this values in a Pandas dataframe and later in a file csv. We create a csv for every label and after we create the file <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to the associated character [a, b, .... ' '].
+                        </div>
+                        <b>VIDEO</b>
+                        <!--//content-->
+                    </div>
+                    <!--//section-inner-->
+                </section>
 
                 <section class="about section" id="implementation">
                     <div class="section-inner">

@@ -15,9 +15,13 @@ cap = cv.VideoCapture(0)
 cap.set(3, wCam)
 cap.set(4, hCam)
 
-detector = htm.HandDetector(detection_confidence=0.80, track_confidence=0.85)
 num_landmark = 21
 num_labels = 500
+DETECTION_CONFIDENCE = 0.80
+TRACK_CONFIDENCE = 0.85
+
+detector = htm.HandDetector(detection_confidence=DETECTION_CONFIDENCE, track_confidence=TRACK_CONFIDENCE)
+
 
 
 while True:
