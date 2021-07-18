@@ -542,3 +542,21 @@ iframe {
   margin-top: 5%;
   margin-bottom: 7%;
 }
+
+.landscape-image-full {
+  width: 100%;
+  margin-top: 5%;
+  margin-bottom: 7%;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-element {
+  width: 30%;
+  height: auto;
+}
