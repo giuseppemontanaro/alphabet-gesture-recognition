@@ -30,8 +30,8 @@ while True:
         break
         
     df = pd.DataFrame()
-    success, img = cap.read()
     while df.shape[0] < num_labels:
+        success, img = cap.read()
         img = detector.draw_hands_on_image(img)
         landmark_list_right = detector.find_position(img, right_hand)
         landmark_list_left = detector.find_position(img, left_hand)
@@ -49,6 +49,6 @@ while True:
             print(df.shape[0])
 
     df[num_landmark * 2] = label
-    df.to_csv(f'../dataset/alphabet/{label}.csv', index=False)
+    df.to_csv(f'../dataset/{label}.csv', index=False)
 
 cap.release()
