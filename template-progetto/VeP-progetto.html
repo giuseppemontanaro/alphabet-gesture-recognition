@@ -176,8 +176,9 @@
                                 <li><b>DETECTION_CONFIDENCE</b> The higher is detection confidence the more accurate will be the examples. The max is always 1 but is not recommended because the precision of 100% is never reached by MediaPipe. We used 0.80 as detection confidence.</li>
                                 <li><b>TRACK_CONFIDENCE</b> A similar speech can be made for the track confidence. in this case we use 0.85 as track confidence.</li>
                             </ul> 
-                            After setting the parameters, running the script the system will require an id for the label. We use the number from 0 to 24 to identify the labels. Then the script open the webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand. After that using the <b>Pandas</b> library it saves the values of the landmark in a Pandas dataframe and later in a file csv. We create a csv for every label and after we create the file <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to the associated character [a, b, .... ' ']
+                            After setting the parameters, running the script the system will require an id for the label. We use the number from 0 to 24 to identify the labels. Then the script open the webcam using <b>OpenCV</b> and uses the HandTrackingModule written before to detect the hand and get the landmark list. The strategy adopted is to use as a feature for every example the distance between the most relevant landmarks. To calculate this distance we write the <b>landmark_operator</b> module wich calculate the distance using the <b>Math</b> python module. Using the <b>Pandas</b> library it saves this values in a Pandas dataframe and later in a file csv. We create a csv for every label and after we create the file <b>alphabet_mapping.json</b> which contains the mapping from the label used [0,1, ...24] to the associated character [a, b, .... ' '].
                         </div>
+                        <b>VIDEO</b>
                         <!--//content-->
                     </div>
                     <!--//section-inner-->
