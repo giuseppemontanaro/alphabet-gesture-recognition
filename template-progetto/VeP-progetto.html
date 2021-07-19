@@ -340,17 +340,35 @@
                     <div class="section-inner">
                         <h2 class="heading"><a id="training"></a>Results</h2>
                         <div class="content">
-                            <h3>Risultati qualitativi</h3>
-                            <p>Below is shown an example of application's use with the sentence 'My Name Is Simone'</p>
+                            <h3>Qualitative Results</h3>
+                            <p>Below is shown an example of application's use with the sentence 'my name is Simone'</p>
 
                             <video class="landscape-media-full" controls>
                                 <source src="VeP-progetto_files/video/Utilizzo-Applicazione.mov" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
 
-                            <h3>Risultati quantitativi</h3>
+                            <h3>Quantitative Results</h3>
                             <p>
-                                Below are shown the values of confusion matrix and precision, recall and f-measure.
+                                The resulting model (tuned with grid search) has these parameters:
+                            <ul>
+                                <li>C: 100</li>
+                                <li>max_iter: 100</li>
+                                <li>penalty: l2</li>
+                                <li>solver: newton-cg</li>
+                            </ul>
+                            </p>
+                            <p>
+                                In general, the model developed has great performances with almost every class. In all
+                                these cases, it reached f-mesure score above 0.90. Some problems have arisen in the
+                                classification of the letters H, P and Q (classes number 7, 14, 15), here the f-measure
+                                score are respectively 0.76, 0.81, 0.87. Sadly, the problem is mainly due to the
+                                MediaPipe Hand Module which is not capable of correctly detecting the hand doing the
+                                gestures of these letters. Unfortunately, for this reason we aren't able to enhace the
+                                performace for these classes.
+                                <br>
+                                Below are shown the all values of confusion matrix and precision, recall and f-measure
+                                for every classes.
                                 <img class="landscape-media" src="./VeP-progetto_files/img/confusion_matrix.png"
                                     alt="confusion_matrix">
                                 <img class="landscape-media" src="./VeP-progetto_files/img/classification_report.png"
