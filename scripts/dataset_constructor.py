@@ -51,6 +51,6 @@ while True:
 
     df['y'] = label
     Path('../dataset').mkdir(parents=True, exist_ok=True)
-    df.to_csv(f'../dataset/{label}.csv', index=False)
+    df.to_csv(f'../dataset/csv/{label}.csv', index=False)
 
 cap.release()

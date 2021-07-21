@@ -1,5 +1,26 @@
 import cv2 as cv
 from hand_tracking.src.hand_tracker import HandTracker
+from datetime import datetime
+import os
+
+
+def get_orthogonal_rect(image, points):
+    min_x = image.shape[1]
+    max_x = -1
+    min_y = image.shape[0]
+    max_y = -1
+    for point in points:
+        x = point[0]
+        y = point[1]
+        if x < min_x:
+            min_x = x
+        if x > max_x:
+            max_x = x
+        if y < min_y:
+            min_y = y
+        if y > max_y:
+            max_y = y
+    return int(min_x), int(max_x), int(min_y), int(max_y)
 
 BASE_PATH = "hand_tracking/models/"
 PALM_MODEL_PATH = BASE_PATH + "palm_detection_without_custom_op.tflite"
@@ -25,17 +46,29 @@ capture.set(3, wCam)
 capture.set(4, hCam)
 
 while True:
-    hasFrame, frame = capture.read()
-    image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-    points, bbox = detector(image)
-    if points is not None:
-        cv.line(frame, (int(bbox[0][0]), int(bbox[0][1])), (int(bbox[1][0]), int(bbox[1][1])), CONNECTION_COLOR, THICKNESS)
-        cv.line(frame, (int(bbox[1][0]), int(bbox[1][1])), (int(bbox[2][0]), int(bbox[2][1])), CONNECTION_COLOR, THICKNESS)
-        cv.line(frame, (int(bbox[2][0]), int(bbox[2][1])), (int(bbox[3][0]), int(bbox[3][1])), CONNECTION_COLOR, THICKNESS)
-        cv.line(frame, (int(bbox[3][0]), int(bbox[3][1])), (int(bbox[0][0]), int(bbox[0][1])), CONNECTION_COLOR, THICKNESS)
-
-    cv.imshow("Img", frame)
-    hasFrame, frame = capture.read()
-    key = cv.waitKey(1)
-    if key == 27:
+    label = input("inserisci numero etichetta (lettera qualsiasi per uscire): ")
+    if not label.isnumeric():
         break
+
+    dir = os.path.join(f"../dataset/imgs/{label}")
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+
+    num_example = 0
+    while num_example < 500:
+        hasFrame, frame = capture.read()
+        image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        points, bbox = detector(image)
+        if points is not None:
+            min_x, max_x, min_y, max_y = get_orthogonal_rect(image, bbox)
+            cv.rectangle(frame, (min_x, min_y), (max_x, max_y), (0, 255, 0), THICKNESS)
+            cropped = image[min_y : max_y-1, min_x : max_x-1]
+            if cropped.size != 0:
+                cropped = cv.cvtColor(cropped, cv.COLOR_BGR2RGB)
+                now = datetime.now()
+                timestamp = datetime.timestamp(now)
+                cv.imwrite(f'../dataset/imgs/{label}/{timestamp}.png', cropped)
+                num_example += 1
+                print(num_example)
+        cv.imshow("Img", frame)
+        key = cv.waitKey(1)
