@@ -31,6 +31,8 @@ POINT_COLOR = (0, 255, 0)
 CONNECTION_COLOR = (255, 0, 0)
 THICKNESS = 2
 
+NUM_LABELS = 500
+
 detector = HandTracker(
     False,
     PALM_MODEL_PATH,
@@ -55,13 +57,13 @@ while True:
         os.mkdir(dir)
 
     num_example = 0
-    while num_example < 500:
+    while num_example < NUM_LABELS:
         hasFrame, frame = capture.read()
         image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
         points, bbox = detector(image)
         if points is not None:
             min_x, max_x, min_y, max_y = get_orthogonal_rect(image, bbox)
-            cv.rectangle(frame, (min_x, min_y), (max_x, max_y), (0, 255, 0), THICKNESS)
+            cv.rectangle(image, (min_x, min_y), (max_x, max_y), (0, 255, 0), THICKNESS)
             cropped = image[min_y : max_y-1, min_x : max_x-1]
             if cropped.size != 0:
                 cropped = cv.cvtColor(cropped, cv.COLOR_BGR2RGB)
@@ -70,5 +72,5 @@ while True:
                 cv.imwrite(f'../dataset/imgs/{label}/{timestamp}.png', cropped)
                 num_example += 1
                 print(num_example)
-        cv.imshow("Img", frame)
+        cv.imshow("Img", image)
         key = cv.waitKey(1)
