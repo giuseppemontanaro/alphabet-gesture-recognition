@@ -25,7 +25,8 @@ def get_orthogonal_rect(image, points):
 
 
 #MODEL_CNN = load_model('../models/cnn_model_h_q.h5')
-MODEL_CNN = load_model('../models/cnn_model.h5')
+#MODEL_CNN = load_model('../models/cnn_model.h5')
+MODEL_CNN = load_model('../models/cnn_model_simone.h5')
 
 MODEL_HAND_TRACKING_PATH = "hand_tracking/models/"
 PALM_MODEL_PATH = MODEL_HAND_TRACKING_PATH + "palm_detection_without_custom_op.tflite"
@@ -54,7 +55,7 @@ while True:
 	if points is not None:
 		min_x, max_x, min_y, max_y = get_orthogonal_rect(image, bbox)
 		cv.rectangle(image, (min_x, min_y), (max_x, max_y), (0, 255, 0), 2)
-		cropped = image[min_y : max_y-1, min_x : max_x-1]
+		cropped = image[min_y+1 : max_y-1, min_x+1 : max_x-1]
 		if cropped.size != 0:
 			cropped = cv.resize(cropped, (150, 150))
 			if DEBUG:
