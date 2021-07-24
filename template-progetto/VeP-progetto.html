@@ -347,6 +347,14 @@
                                 <source src="VeP-progetto_files/video/Utilizzo-Applicazione.mov" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+                            <p>
+                                We organized a test session with two our coworkers, and after some time to adapt they
+                                have managed to make the app reproduce a sentence. This remark the fact that the app is
+                                quite utilizable and work well in a production evirionment. We have always used our
+                                laptop's webcam during the entire project in the same position. Moreover, the model is
+                                light-weighted, indeed it easily run on our machines and it can do between 10 and 15
+                                prediction per seconds.
+                            </p>
 
                             <h3>Quantitative Results</h3>
                             <p>
@@ -375,6 +383,46 @@
                                     alt="classification_report.png">
                             </p>
                             </p>
+                        </div>
+                        <!--//content-->
+                    </div>
+                    <!--//section-inner-->
+                </section>
+                <!--//section-->
+
+                <section class="about section" id="results">
+                    <div class="section-inner">
+                        <h2 class="heading"><a id="training"></a>Improve Performance for Difficult Letters</h2>
+                        <div class="content">
+                            <p>
+                                We have develop a secondary model which is a convolutional neural network, in order to
+                                improve the performance for difficult hand signs, we considered H, P and Q.
+                                We used the MediaPipe Palm Detection model to collect the data using the script
+                                <b>dataset_cnn_constructor.py</b>. This script is based on a GitHub repository
+                                (<a href="https://github.com/aashish2000/hand_tracking">link</a>) which can detect hand
+                                in an image. Our script returns images of hand gesture as examples for the training
+                                section. In this case we collected 500 examples for each classes. This is an example for
+                                the letter H:
+                                <br>
+                                <img class="landscape-media" src="/VeP-progetto_files/img/hand_sign_example.png" alt=""
+                                    style="width: 20%; margin-left: 40%;">
+                                <br>
+                            </p>
+                            <p>
+                                The following step was about building the model and so we have written another Colab
+                                notebook:
+                                <script
+                                    src="https://gist.github.com/giuseppemontanaro/d69229e03f94e7b70085d12cb9ee4050.js"></script>
+                            </p>
+                            <p>
+                                In the test phase we obtined good result, as a matter of fact, the model has an accuracy
+                                of 92% and the following confusion matrix (0 = P, 1 = Q, 2 = H):<br>
+                            <div class="flex-row">
+                                <img src="/VeP-progetto_files/img/conf_mat_cnn.png" alt="">
+                                <img src="/VeP-progetto_files/img/class_rep_cnn.png" alt="">
+                            </div>
+                            </p>
+
                         </div>
                         <!--//content-->
                     </div>
