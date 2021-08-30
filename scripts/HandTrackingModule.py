@@ -79,7 +79,7 @@ class HandPalmDetector:
             box_enlarge=box_enlarge
         )
 
-    def draw_hands_on_image(self, img):
+    def draw_hands_box_on_image(self, img):
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         points, bbox = self.detector(img_rgb)
         if points is not None:

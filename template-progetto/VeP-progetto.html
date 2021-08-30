@@ -398,7 +398,7 @@
                                 We have develop a secondary model which is a convolutional neural network, in order to
                                 improve the performance for difficult hand signs, we considered H, P and Q.
                                 We used the MediaPipe Palm Detection model to collect the data using the script
-                                <b>dataset_cnn_constructor.py</b>. This script is based on a GitHub repository
+                                <b>dataset_constructor_palm.py</b>. This script is based on a GitHub repository
                                 (<a href="https://github.com/aashish2000/hand_tracking">link</a>) which can detect hand
                                 in an image. Our script returns images of hand gesture as examples for the training
                                 section. In this case we collected 500 examples for each classes. This is an example for
@@ -417,10 +417,27 @@
                             <p>
                                 In the test phase we obtined good result, as a matter of fact, the model has an accuracy
                                 of 92% and the following confusion matrix (0 = P, 1 = Q, 2 = H):<br>
-                            <div class="flex-row">
-                                <img src="/VeP-progetto_files/img/conf_mat_cnn.png" alt="">
-                                <img src="/VeP-progetto_files/img/class_rep_cnn.png" alt="">
-                            </div>
+
+                                <img style="margin-left:40%; margin-top: 5%" src="./VeP-progetto_files/img/conf_mat_cnn.png" alt="">
+                                <img class="landscape-media" src="./VeP-progetto_files/img/class_rep_cnn.png" alt="">
+                            </p>
+
+                            <p>
+                                We create also the script <b>test_cnn.py</b> to test the new model.
+                            </p>
+                            <p>
+                                After verifying the correctness of the model, we have integrated it into the application (Runnable with <b>gesture_detector.py</b>). The idea is to use the new model as a <b>fallback model</b> for the application. Basically, to predict the sign in the first model, we use a buffer of a certain size <b>X</b>. When the buffer is full, if the most common predicted letter is above a certain percentage <b>x%</b> we predict that letter. Otherwise we clean the buffer and we continue with the detection. The new model use the same strategy with is own buffer of a bigger dimension <b>Z > X.</b>
+                                So if the first model does not make the prediction until the buffer Z is full, we use the fallback model to do the prediction. In any case, if the most common predicted letter is not above the percentage <b>z%</b>, we clean the Z buffer and continue with the detection. Obviously, to make it all work, we clean the Z buffer also in the case we have a prediction using the first model, in order to start over with a clean detection of a new letter. The following constants can be set to change the behavior of the application:
+                                <ul>
+                                    <li><b>NUM_PREDICTION_FRAME:</b> the dimension of the first model buffer</li>
+                                    <li><b>PRECISION_INDEX:</b> the percentage x% of the first model (from 0 to 1)</li>
+                                    <li><b>FALLBACK_INDEX:</b> the multiplicative factor of the Z buffer => Z = FALLBACK_INDEX * X</li>
+                                </ul>
+                                The following video shows the behavior of the application with the word <b>hotel</b> (h was a difficult letter to predict) with the new model integrated.
+                            <video class="landscape-media-full" controls>
+                                <source src="VeP-progetto_files/video/Utilizzo-Applicazione-Nuova.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
                             </p>
 
                         </div>
